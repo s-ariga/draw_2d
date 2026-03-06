@@ -1,42 +1,40 @@
-# Seiichi Ariga <seiichi.ariga@gmail.com>
+# Copyright 2026  Seiichi Ariga
 
-import naylib
+import raylib
+import rlgl
+import std/math # sinを使うために必要
 
-# --- 設定 ---
-const
-  screenWidth = 800
-  screenHeight = 450
+import constants
+import gen_line_func
 
 proc main() =
-  # ウィンドウの初期化
-  initWindow(screenWidth, screenHeight, "Naylib 2D Boilerplate")
-  setTargetFPS(60) # フレームレートを60に固定
+  # アンチエイリアス有効化
+  setConfigFlags(flags(ConfigFlags.Msaa4xHint))
+  initWindow(ScreenWidth, ScreenHeight, "Naylib Math Drawing")
+  setTargetFPS(60)
 
-  # メインループ
   while not windowShouldClose():
-    # --- 1. 更新処理 (Update) ---
-    let mousePos = getMousePosition()
+    let t = getTime()
+    let a = 2.0
+    let b = 1.5
+    let points = generateLissajous(2.0, 1.5, t, 360)
 
-    # --- 2. 描画処理 (Draw) ---
     beginDrawing()
-    clearBackground(Raywhite) # 背景をクリア
+    clearBackground(BgColor)
 
-    # グリッドの描画 (補助線)
-    drawGrid(10, 1.0)
+    # X軸（中央線）の描画
+    drawLine(0, ScreenHeight div 2, ScreenWidth, ScreenHeight div 2, Lightgray)
 
-    # 図形の描画例
-    drawText("Naylibでお絵かき！", 190, 200, 20, Lightgray)
-    drawCircle(screenWidth div 2, screenHeight div 2, 50, Red)
-    drawRectangle(10, 10, 150, 60, Skyblue)
-    
-    # マウス位置に追従する円
-    drawCircleV(mousePos, 15, Orange)
+    pushMatrix()
+    translatef((ScreenWidth / 2), (ScreenHeight / 2), 0)
+    # 線として描画
+    if points.len > 1:
+        drawLineStrip(points, Blue)
+    popMatrix()
 
-    drawFPS(10, 10) # FPSを表示
+    drawText("(" & $a & "," & $b & ")", 20, 20, 20, Darkgray)
     endDrawing()
 
-  # 終了処理
   closeWindow()
 
-# プログラムの実行
 main()
